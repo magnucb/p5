@@ -4,15 +4,18 @@
 #include <iostream>
 using namespace std;
 
-Cluster::Cluster(double epsilon) :
+Cluster::Cluster(double RadLim, double epsilon) :
     m_kineticEnergy(0),
-    m_potentialEnergy(0)
+    m_potentialEnergy(0),
+    m_totM(0)
 {
+    R0 = RadLim;
     eps = epsilon;
 }
 
 CelestialBody& Cluster::createCelestialBody(vec3 position, vec3 velocity, double mass) {
     m_bodies.push_back( CelestialBody(position, velocity, mass) );
+    m_totM += mass;
     return m_bodies.back(); // Return reference to the newest added celstial body
 }
 
@@ -23,8 +26,8 @@ void Cluster::calculateForcesAndEnergy()
     m_angularMomentum.zeros();
     m_momentum.zeros();
 
-    double m_G = 4*M_PI*M_PI;
-    double angconst = 3.0/pow(63197.8,2); // 3 / c**2, [c] = AU/yr
+    double m_G = M_PI*M_PI*R0*R0*R0/(8.0*m_totM);
+    // double angconst = 3.0/pow(63197.8,2); // 3 / c**2, [c] = AU/yr
 
     for(CelestialBody &body : m_bodies) {
         // Reset forces on all bodies
@@ -43,9 +46,9 @@ void Cluster::calculateForcesAndEnergy()
 
 
             // Calculate the force and potential energy here
-            // vec3 Force = (-m_G*body1.mass*body2.mass*deltaRVector)*(1 + angconst*l2/(dr*dr))/(dr*dr*dr);
-            vec3 Force = m_G*body1.mass*body2.mass * deltaRVector
-                         /(dr*dr*dr + eps*eps*dr);
+            // vec3 Force = (-m_G*body1.mass*body2.mass*deltaRVector)*(1 + angconst*l2/(dr*dr))/(dr*dr*dr);9
+            vec3 Force = -m_G*body1.mass*body2.mass * deltaRVector
+                         /(dr*dr + eps*eps);
             body1.force += Force;
             body2.force -= Force;
         }

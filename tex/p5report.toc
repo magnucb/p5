@@ -1,0 +1,6 @@
+\select@language {english}
+\contentsline {section}{\numberline {1}Introduction, or picking up where we left off}{1}{section.1}
+\contentsline {section}{\numberline {2}Underlying math}{1}{section.2}
+\contentsline {section}{\numberline {3}Major changes in the code}{1}{section.3}
+\contentsline {section}{\numberline {4}Appendix}{2}{section.4}
+\contentsline {subsection}{\numberline {4.1}Code and GitHub}{2}{subsection.4.1}

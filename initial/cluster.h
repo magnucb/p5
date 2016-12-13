@@ -10,7 +10,7 @@
 class Cluster
 {
 public:
-    Cluster(double epsilon);
+    Cluster(double RadLim, double epsilon);
     CelestialBody &createCelestialBody(vec3 position, vec3 velocity, double mass);
     void calculateForcesAndEnergy();
     int numberOfBodies() const;
@@ -25,6 +25,7 @@ public:
     vec3 momentum() const;
     std::vector<CelestialBody> &bodies();
     double eps;
+    double R0;
 
 private:
     std::vector<CelestialBody> m_bodies;
@@ -33,6 +34,7 @@ private:
     std::ofstream m_file;
     double m_kineticEnergy;
     double m_potentialEnergy;
+    double m_totM;
 };
 
 #endif // CLUSTER_H

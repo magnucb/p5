@@ -16,15 +16,12 @@ void Verlet::integrateOneStep(Cluster &system)
 
 
     for(CelestialBody &body : system.bodies()) {
-        //vel_now = body.velocity;
-        //pos_now = body.position;
-
         vec3 acc = body.force / body.mass;
         body.position += body.velocity * m_dt + acc * m_dt*m_dt/2.0;
 
         body.resetForce();
         double m_G = 4*M_PI*M_PI;
-        //system.calculateForcesAndEnergy(); //This slow piece of shit is a pitfall!
+
         for(CelestialBody &body2 : system.bodies()) {
             vec3 deltaRVector = body.position - body2.position;
             double dr = deltaRVector.length();
