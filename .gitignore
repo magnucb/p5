@@ -17,6 +17,13 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+# Custom stuff
+moviefigs/      # ignoring folder
+
+
+
+
 # =========================
 # Operating System Files
 # =========================
