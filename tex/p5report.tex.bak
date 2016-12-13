@@ -194,7 +194,9 @@ The previous project utilized some small-scale general relativity, which at the 
 
 Command line functionality is modified to take in the system's number of bodies \textbf{N}, a time step size \textbf{dt}, correction factor $\varepsilon$, and duration of the simulation.
 
-Next is the random number generation modules initialization, with a uniform distribution of positions for the cluster's stellar bodies, and a gaussian distribution of mass between the stellar
+Next is the random number generation modules initialization, with a uniform distribution of positions for the cluster's stellar bodies, and a gaussian distribution of mass between the stellar bodies, with a mean of 10 Solar masses and a standard deviation of 1 Solar mass.
+
+The cluster's instance is then initialized, and as the calculation of force and energy betwen stellar bodies is a function of this class
 
 
 
