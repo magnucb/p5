@@ -149,7 +149,7 @@ Empty void %TODO
 \newpage
 
 \section*{N-body simulation of an open galactic cluster}
-\section{Introduction, or picking up where we left off}
+\section{Introduction, or picking up where we left off with the Solar system}
 This project is a continuation on a previous project given to the students this semester, in which the students were to gravitationally and numerically simulate the Solar System.
 
 For the current project, the students are to simulate an $N$-body system, unrelated to the Solar system, and investigate properties of the system as it is simulated to reflect on the model's physical validity.
@@ -159,7 +159,9 @@ For this purpose, we may review the mathematical equations related to Newtonian 
 It is worth noting that the differential integration method we will now utilize, will be the Verlet method, as opposed to the Euler or RungeKutta4 method.
 
 \section{Underlying math}
-The most important mathematical expression for an assignment investigating properties of a gravitational system, will be the equations gravitational force exchange. The force equation between two objects, will be as per Newton's law of gravity:
+The most important mathematical expression for an assignment investigating properties of a gravitational system, will be the equations gravitational force exchange.
+\subsection{Newton's laws}
+The force equation between two objects, will be as per Newton's law of gravity:
 \begin{align}\label{eq:gravlaw}
 \vec{F}_{G_{i,j}} &= -G\frac{m_i m_j}{r^3_{i,j}}\vec{r}_{i,j}
 \end{align}
@@ -171,13 +173,16 @@ Furthermore, Newton's third law of motion comes into place here, as objects are 
 \end{align}
 and the force experienced by the second object of the two equals the same force that the first object experiences, only in the opposite direction.
 
+\subsection{Numerical round-off correction}
 At a later point in the project, there is introduced a smoothing factor that helps deal with numerical round-off problems, modifying the force equation thusly:
 \begin{align}\label{eq:modgravlaw}
 \vec{F}_{G_{i,j}} &= -G\frac{m_i m_j}{r^2_{i,j}+\varepsilon^2}\frac{\vec{r}_{i,j}}{r_{i,j}}
 \end{align}
 wherein the new quantity $\varepsilon$ represents the aforementioned smoothing factor, with which different magnitudes of values will be experimented.
 
-Then it is the matter of the system's time scale. It seems arbitrarily that we should measure time in years for a problem that doesn't connect to years in any way. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{crunch}}$ (or $\tau_c$ for short), from which we then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$.
+\subsection{Time and gravitational constant}
+Then it is the matter of the system's time scale. It seems arbitrarily that we should measure time in years for a problem that doesn't connect to years in any way. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{crunch}}$ (or $\tau_c$ for short), from which we then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$. The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" %TODO
+, but its formalism is aready given in the project's details.
 
 \begin{align}\label{eq:tauc_and_G}
 \tau_c &= \sqrt{\frac{3\pi}{32G\rho_0}} \nonumber \\
@@ -189,11 +194,45 @@ G &= \frac{1}{8}\frac{\pi^2 R_0^3}{\sum_{i} m_i}
 \end{align}
 
 
-\section{Major changes in the code}
+\section{Programming}
 The previous project utilized some small-scale general relativity, which at the scales of this current project is obsolete. Instead, the force equation is rewritten according to equation \ref{eq:gravlaw} and \ref{eq:modgravlaw}.
 
-Command line functionality is modified to take in the system's number of bodies \textbf{N}, a time step size \textbf{dt}, correction factor $\mathbf{\varepsilon dt}$, and duration of the simulation.
+The layout of the class structures largely remain the same, and the main program basically runs the same way, with a few changes.
 
+\subsection{Update of main}
+Command line functionality is modified to take in the system's number of bodies \textbf{N}, a time step size \textbf{dt}, correction factor $\varepsilon$, and duration of the simulation.
+
+Next is the random number generation modules initialization, with a uniform distribution of positions for the cluster's stellar bodies, and a gaussian distribution of mass between the stellar bodies, with a mean of 10 Solar masses and a standard deviation of 1 Solar mass.
+
+The cluster's instance is then initialized with a given value for $\varepsilon$, as the calculation of forces and energies betwen stellar bodies is a function of this class.
+
+The stellar bodies now need to be created. To ensure that the cluster's bodies are created in a spherically uniform distribution, the coordinates system in which they are firstinitialized is spherical, and then these are translated into cartesian coordinates. The bodies are then created with a gaussially randomized mass value as described prior.
+
+Now that the cluster's total mass is measured, the gravitational constant $G$ is initialized as per equation \ref{eq:tauc_and_G}, the datafile is opened and the numerical integration begins, producing the clusters' bodies' movement and energies unto the data.
+
+\subsection{Update of Velocity Verlet}
+As stated previously, the numerical integrator of the system utilizes the Velocity Verlet method. It should be noted that the previous project's utilization of this algorithm was extremely crudely implemented. For the purpose of this project, however, the algorithm has been cleaned up:
+\lstset{style=c++style}
+\begin{lstlisting}
+void Verlet::integrateOneStep(Cluster &system){
+system.calculateForcesAndEnergy();
+// Velocity Verlet
+for (CelestialBody &body :system.bodies()) {
+  // half-step computation
+  body.velocity += (m_dt/2.0)*(body.force / body.mass);
+  body.position += body.velocity*m_dt;
+}
+system.calculateForcesAndEnergy();
+for (CelestialBody &body :system.bodies()) {
+  // the new velocity
+  body.velocity += (m_dt/2.0)*(body.force / body.mass);
+}}
+\end{lstlisting}
+
+This improvement of the code yields an efficiency boost at about 30\%  less time for a standard run of the program with 100 stellar bodies and 4000 time steps to iterate.
+
+\subsection{Time steps}
+For the initial test runs of the program, the initial parameters were set to $\mathbf{N} = 100$ stellar bodies, $\mathbf{R_0} = 20$ light years for the stellar bodies' radial distribution's upper displacement limit, and a time resolution of $\mathbf{dt} = 0.001\tau_c$, just to start off.
 
 
 \section{Appendix}

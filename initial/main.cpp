@@ -54,7 +54,7 @@ int main(int numArguments, char **arguments){
 
     // Use with: cluster.createCelestialBody( position, velocity, mass );
     // creating the base cluster
-    Cluster cluster(R0, eps);
+    Cluster cluster(eps);
     for (int i=0; i<NumOfBodies; i++){
 
         double r = uniform_RNG(gen);
@@ -68,7 +68,7 @@ int main(int numArguments, char **arguments){
         cluster.createCelestialBody( vec3(x,y,z), vec3(0,0,0),
                                      gaussian_RNG(gen));
     }
-
+    cluster.Gengage(R0);//just to initialize the value of G, dep on tot_mass
     string filename = "..\\data\\cluster_"
             +to_string(NumOfBodies)+"body_dt"+to_string(int(dt*1000))+
             "_eps"+to_string(int(eps*100))+
@@ -79,7 +79,7 @@ int main(int numArguments, char **arguments){
     cluster.writeToFile(filename);
     for(int timestep=0; timestep<tot_time*numTimesteps; timestep++) {
         integrator.integrateOneStep(cluster);
-        if (timestep%40 == 0) cluster.writeToFile(filename); // less size
+        if (timestep%60 == 0) cluster.writeToFile(filename); // less size
     }
 
     t_stop = clock();

@@ -4,12 +4,12 @@
 #include <iostream>
 using namespace std;
 
-Cluster::Cluster(double RadLim, double epsilon) :
+Cluster::Cluster(double epsilon) :
     m_kineticEnergy(0),
     m_potentialEnergy(0),
-    m_totM(0)
+    m_totM(0),
+    m_G(0)
 {
-    R0 = RadLim;
     eps = epsilon;
 }
 
@@ -19,15 +19,16 @@ CelestialBody& Cluster::createCelestialBody(vec3 position, vec3 velocity, double
     return m_bodies.back(); // Return reference to the newest added celstial body
 }
 
+void Cluster::Gengage(double R0){
+    m_G = M_PI*M_PI*R0*R0*R0/(8.0*m_totM);
+}
+
 void Cluster::calculateForcesAndEnergy()
 {
     m_kineticEnergy = 0;
     m_potentialEnergy = 0;
     m_angularMomentum.zeros();
     m_momentum.zeros();
-
-    double m_G = M_PI*M_PI*R0*R0*R0/(8.0*m_totM);
-    // double angconst = 3.0/pow(63197.8,2); // 3 / c**2, [c] = AU/yr
 
     for(CelestialBody &body : m_bodies) {
         // Reset forces on all bodies

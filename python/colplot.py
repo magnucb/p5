@@ -71,7 +71,6 @@ def PlotDat2DMov(posdat, bodycount, dt, eps, tot_time):
         pl.ylabel("Y-axis [ly]")
         pl.grid('on')
         pl.axis('equal')
-        # pl.axis([-20,20, -20,20])
         pl.xlim([-25,25])
         pl.ylim([-25,25])
         pl.savefig("../moviefigs/cluster_"+str(bodycount)+"body_dt"+str(int(dt*1000))+"_eps"+str(int(eps*100))+"_dur"+str(int(tot_time))+"_movie"+str(i)+".png")
@@ -92,7 +91,7 @@ def PlotDat3DMov(posdat, bodycount, dt, eps, tot_time):
     for i in range(frames):
         ax3D.cla()
         for body in range(bodycount):
-            #ax3D.plot(posdat[body,:i+1,0], posdat[body,:i+1,1], posdat[body,:i+1,2], linestyle="-", color=colorlist[body])
+            # ax3D.plot(posdat[body,:i+1,0], posdat[body,:i+1,1], posdat[body,:i+1,2], linestyle="-", color=colorlist[body])
             ax3D.plot([posdat[body,i,0]], [posdat[body,i,1]], [posdat[body,i,2]], marker="o", color=colorlist[body])
 
         ax3D.set_title(r"Star cluster 3D %dbody %gdt %g$\varepsilon$, t=%g$\tau_c$" % (bodycount, dt, eps, (tot_time*i/float(frames)) ) )

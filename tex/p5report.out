@@ -1,5 +1,11 @@
-\BOOKMARK [1][-]{section.1}{Introduction, or picking up where we left off}{}% 1
+\BOOKMARK [1][-]{section.1}{Introduction, or picking up where we left off with the Solar system}{}% 1
 \BOOKMARK [1][-]{section.2}{Underlying math}{}% 2
-\BOOKMARK [1][-]{section.3}{Major changes in the code}{}% 3
-\BOOKMARK [1][-]{section.4}{Appendix}{}% 4
-\BOOKMARK [2][-]{subsection.4.1}{Code and GitHub}{section.4}% 5
+\BOOKMARK [2][-]{subsection.2.1}{Newton's laws}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Numerical round-off correction}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Time and gravitational constant}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Programming}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Update of main}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Update of Velocity Verlet}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Time steps}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Appendix}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Code and GitHub}{section.4}% 11

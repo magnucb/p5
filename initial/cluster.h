@@ -10,8 +10,9 @@
 class Cluster
 {
 public:
-    Cluster(double RadLim, double epsilon);
+    Cluster(double epsilon);
     CelestialBody &createCelestialBody(vec3 position, vec3 velocity, double mass);
+    void Gengage(double R0);
     void calculateForcesAndEnergy();
     int numberOfBodies() const;
 
@@ -25,7 +26,7 @@ public:
     vec3 momentum() const;
     std::vector<CelestialBody> &bodies();
     double eps;
-    double R0;
+    double m_G;
 
 private:
     std::vector<CelestialBody> m_bodies;
