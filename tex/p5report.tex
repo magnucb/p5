@@ -132,7 +132,9 @@
 		\end{figure}
 
 		\begin{abstract}
-Empty void %TODO
+This project is a continuation on a previous project given to the students this semester, in which the students were to gravitationally and numerically simulate the Solar System.
+
+For the current project, the students are to simulate an $N$-body system, unrelated to the Solar system, and investigate properties of the system as it is simulated to reflect on the model's physical validity.
 		\end{abstract}
 
 		\newpage
@@ -149,14 +151,18 @@ Empty void %TODO
 \newpage
 
 \section*{N-body simulation of an open galactic cluster}
-\section{Introduction, or picking up where we left off with the Solar system}
-This project is a continuation on a previous project given to the students this semester, in which the students were to gravitationally and numerically simulate the Solar System.
+\section{Introduction}
+For this project I will review the mathematical equations related to Newtonian gravitation and other relevant equations.
 
-For the current project, the students are to simulate an $N$-body system, unrelated to the Solar system, and investigate properties of the system as it is simulated to reflect on the model's physical validity.
+It is worth noting that the differential integration method that I utilize is the Verlet method, as opposed to the Euler or RungeKutta4 method which were mentioned in the previous astronomical project.
 
-For this purpose, we may review the mathematical equations related to Newtonian gravitation, and other relevant equations.
-
-It is worth noting that the differential integration method we will now utilize, will be the Verlet method, as opposed to the Euler or RungeKutta4 method.
+The physical properties which I will investigate through this project are:
+\begin{itemize}
+\item energy conservation in an $N$-body system and its related equilibrium,
+\item numerical instabilities from round-off corrections,
+\item validity of the virial theorem,
+\item radial distribution of stellar bodies in a gravitationally bound system.
+\end{itemize}
 
 \section{Underlying math}
 The most important mathematical expression for an assignment investigating properties of a gravitational system, will be the equations gravitational force exchange.
@@ -181,17 +187,18 @@ At a later point in the project, there is introduced a smoothing factor that hel
 wherein the new quantity $\varepsilon$ represents the aforementioned smoothing factor, with which different magnitudes of values will be experimented.
 
 \subsection{Time and gravitational constant}
-Then it is the matter of the system's time scale. It seems arbitrarily that we should measure time in years for a problem that doesn't connect to years in any way. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{crunch}}$ (or $\tau_c$ for short), from which we then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$. The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" %TODO
-, but its formalism is aready given in the project's details.
+Then it is the matter of the system's time scale. It seems arbitrarily that I should measure time in years for a problem that isn't related to Earthern years. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{crunch}}$ (or $\tau_c$ for short). The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" \cite{STHM}, but its formalism is already given in the project's details. Simply put, it describes the analytical timeframe in which a homogeneous fluid collapses in on itself to form a singularity.
 
+From the expression of $\tau_c$ I then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$.
 \begin{align}\label{eq:tauc_and_G}
 \tau_c &= \sqrt{\frac{3\pi}{32G\rho_0}} \nonumber \\
 \Rightarrow G &= \frac{3\pi}{32\tau_c^2\rho_0}\ , \nonumber \\
 \rho_0 &= \frac{\sum_{i} m_i}{\frac{4}{3}\pi R_0^3}\ , \nonumber \\
 \Rightarrow G &= \frac{1}{8}\frac{\pi^2 R_0^3}{\tau_c^2 \sum_{i} m_i}\nonumber \\
-\intertext{however, as we measure time as an iterated increment of $\tau_c$, its value is normalized to 1, yielding:}\nonumber \\
+\intertext{however, as I measure time as an iterated increment of $\tau_c$, its value is normalized to 1, yielding:}\nonumber \\
 G &= \frac{1}{8}\frac{\pi^2 R_0^3}{\sum_{i} m_i}
 \end{align}
+
 
 
 \section{Programming}
@@ -211,7 +218,7 @@ The stellar bodies now need to be created. To ensure that the cluster's bodies a
 Now that the cluster's total mass is measured, the gravitational constant $G$ is initialized as per equation \ref{eq:tauc_and_G}, the datafile is opened and the numerical integration begins, producing the clusters' bodies' movement and energies unto the data.
 
 \subsection{Update of Velocity Verlet}
-As stated previously, the numerical integrator of the system utilizes the Velocity Verlet method. It should be noted that the previous project's utilization of this algorithm was extremely crudely implemented. For the purpose of this project, however, the algorithm has been cleaned up:
+As stated previously, the numerical integrator of the system utilizes the Velocity Verlet method. It should be noted that the previous project's utilization of this algorithm was extremely crudely implemented. For the purpose of this project, however, the algorithm has been cleaned up:forklare
 \lstset{style=c++style}
 \begin{lstlisting}
 void Verlet::integrateOneStep(Cluster &system){
@@ -229,10 +236,49 @@ for (CelestialBody &body :system.bodies()) {
 }}
 \end{lstlisting}
 
-This improvement of the code yields an efficiency boost at about 30\%  less time for a standard run of the program with 100 stellar bodies and 4000 time steps to iterate.
+This improvement of the code yields an efficiency boost at about 20\% less time for a standard run of the program with 100 stellar bodies and 4000 time steps to iterate.
 
 \subsection{Time steps}
-For the initial test runs of the program, the initial parameters were set to $\mathbf{N} = 100$ stellar bodies, $\mathbf{R_0} = 20$ light years for the stellar bodies' radial distribution's upper displacement limit, and a time resolution of $\mathbf{dt} = 0.001\tau_c$, just to start off.
+Choosing a decent time increment's value, $\mathbf{dt}$, is essential to ensure that the program proceeds ahead in the best possible way.
+
+To find try out a few resolutions, I constructed some initial test runs of the program. The initial parameters were set to $\mathbf{N} = 100$ stellar bodies, $\mathbf{R_0} = 20$ light years for the stellar bodies' radial distribution's upper displacement limit, and trying out a few time resolutions of $\mathbf{dt}$ being a varyingly small fraction of $\tau_c$.
+
+Having tried out a few time resolutions, I settled on $\mathbf{dt} = 0.001\tau_c$, as this seemed to yield a smooth accuracy for the integration and still be time efficient.
+
+\section{Experiments}
+This section holds all the experiments that were performed with the code. Where not otherwise specified, parameters $\mathbf{R_0}$ and $\mathbf{dt}$ are set to $20$ and $0.001\tau_c$ respectively.
+\subsection{Equilibrium without numerical round-off correction results}
+Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction term yielded this development.
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur15_movie0.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t = 0\tau_c$.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur15_movie250.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \approx 7.5\tau_c$.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur15_movie500.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \approx 15\tau_c$.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergies_100body_dt1_eps0_dur15.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy development for a duration of $t \approx 15\tau_c$.}\label{fig:eps0dur15}
+\end{figure}
+\subsection{Equilibrium without numerical round-off correction discussion}
+Having seen the development of the cluster by plots and animation, it seems that the cluster almost immediately ejects some of its contents, and as the rest of the structure collapses even more material is flung, the flinging being indicated by the sudden increases in kinetic energy from figure \ref{fig:eps0dur15}, sideways and beyond at regular intervals when the stellar distribution seems to pulse.
+
+It is clear that no matter for how long a duration one might choose for this set of initial conditions, a large fraction of stellar bodies are ejected and flung across space, effectively never to be bound by the cluster's potential well again.
+
+One might consider the aforementioned apparent motion of pulsation to be the energies of the system reaching an equilibrium point, which is the ideal for a gravitationally bound system. However, as such a large quantity of bodies that initially belonged to the cluster are ejected, then this seems a poor equilibrium for the initial system - even though the remaining core bodies seem to waltz around peacefully enough.
+
+
+
+
 
 
 \section{Appendix}
@@ -244,22 +290,30 @@ All my code is located at this address:
 \begin{thebibliography}{9}
 \bibitem{example_code}
   Jensen, M 2016,
+  
   \verb|CodeName|,
   
-  viewed $something^{th}$ of December 2016,
-  \url{URL}.
+  viewed $9^{th}$ of December 2016,
   
-\bibitem{analytical_methods}
-	Jensen, M 2016, 
-	Computational Physics Lecture Notes Fall 2015:
-	
-	13.2.2: Canonical Ensemble \& 
-	
-	13.3.1: Ising Model and Phase Transitions in Magnetic Systems,
-	
-	viewed $something^{th}$ of December 2016, 
-	\url{URL}
+  \url{URL}
 
+\bibitem{cold_collapse}
+	M. Joyce, B. Marcos, and F. Sylos Labini 2010,
+	
+	Cold uniform spherical collapse revisited
+	
+	viewed $9^{th}$ of December 2016,
+		
+	\url{https://arxiv.org/pdf/1011.0614v1.pdf}
+	
+\bibitem{STHM}
+	M. Dijkstra,
+	
+	AST4320: Cosmology and Extragalactic Astrophysics,
+	
+	viewed $^{th}$ of December 2016,
+	
+	\url{https://dl.dropboxusercontent.com/u/16515147/AST4320/LecturenotesAST4320_Nov30.pdf}
 \end{thebibliography}
 
 \end{document}

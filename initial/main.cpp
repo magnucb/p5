@@ -41,8 +41,14 @@ int main(int numArguments, char **arguments){
         tot_time = atoi(arguments[4]);
     }
     int numTimesteps = 1/dt;
-    cout << "Using Verlet method w/ " << numTimesteps
-         << " time steps per tau_c." << endl;
+    cout << "I just created my first galactic cluster w/" << endl <<
+            "* N   = " << NumOfBodies << " objects." << endl <<
+            "* dt  = " << dt << " tau_c time resolution" << endl <<
+            "* eps = " << eps << " round-off correction term" << endl <<
+            "* dur = " << tot_time << " tau_c as duration." << endl <<
+            "Using Verlet method w/ " << numTimesteps <<
+            " time steps per tau_c." << endl;
+
 
     // Initializing random device and random number generators
     std::random_device rd;
@@ -69,25 +75,39 @@ int main(int numArguments, char **arguments){
                                      gaussian_RNG(gen));
     }
     cluster.Gengage(R0);//just to initialize the value of G, dep on tot_mass
-    string filename = "..\\data\\cluster_"
+    string posName = "..\\data\\ClusterPos_"
+            +to_string(NumOfBodies)+"body_dt"+to_string(int(dt*1000))+
+            "_eps"+to_string(int(eps*100))+
+            "_dur"+to_string(tot_time)+".dat";
+
+    string enName = "..\\data\\ClusterEn_"
             +to_string(NumOfBodies)+"body_dt"+to_string(int(dt*1000))+
             "_eps"+to_string(int(eps*100))+
             "_dur"+to_string(tot_time)+".dat";
 
     Verlet integrator(dt);
     t_start = clock();
-    cluster.writeToFile(filename);
-    for(int timestep=0; timestep<tot_time*numTimesteps; timestep++) {
+
+    // Initialize file w/ initial conditions
+    cluster.writeToFile(posName);//for some reason, 1st call only creates file
+    cluster.EnergyToFile(enName);//2nd call and onwards writes data
+    cluster.calculateForcesAndEnergy();
+    cluster.writeToFile(posName);
+    cluster.EnergyToFile(enName);
+
+    // Integrate
+    for(int timestep=0; timestep<tot_time*numTimesteps-1 ; timestep++) {
         integrator.integrateOneStep(cluster);
-        if (timestep%60 == 0) cluster.writeToFile(filename); // less size
+        if (timestep%40 == 0){ // less size
+            cluster.calculateBodyEnergy();
+            cluster.writeToFile(posName);
+            cluster.EnergyToFile(enName);
+        }
     }
 
     t_stop = clock();
-
-    cout << "I just created my first galactic cluster that has " << cluster.bodies().size() << " objects." << endl;
-
     time = abs(t_start - t_stop)/( (double) CLOCKS_PER_SEC);
-    cout << "time of integration method: t=" << time << " s" << endl;
+    cout << endl << "Time of integration method: t=" << time << " s" << endl;
 
     return 0;
 }

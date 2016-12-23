@@ -19,7 +19,7 @@ $RECYCLE.BIN/
 
 
 # Custom stuff
-moviefigs\      # ignoring folder
+moviefigs\\      # ignoring folder
 
 
 
