@@ -304,8 +304,6 @@ def plotVirial(posdat, endat, bodycount, dt, eps, tot_time):
     bincount = 60
     weights, edges = pl.histogram(eq_radia, bins = bincount, range=None, normed=False, weights=None, density=None)
     radia = edges + 0.5*(edges[1]-edges[0])
-
-    #n, bins, patches = plt.hist(radii[:-1], bins = radii, weights = number_density, normed = True)
     
     # lsm finds correct r0
     lengthnumber = 1000
