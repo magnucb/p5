@@ -41,6 +41,8 @@ int main(int numArguments, char **arguments){
         tot_time = atoi(arguments[4]);
     }
     int numTimesteps = 1/dt;
+    float MSF = 100./NumOfBodies; // mass scaling factor to keep mass constant
+
     cout << "I just created my first galactic cluster w/" << endl <<
             "* N   = " << NumOfBodies << " objects." << endl <<
             "* dt  = " << dt << " tau_c time resolution" << endl <<
@@ -55,7 +57,7 @@ int main(int numArguments, char **arguments){
     std::mt19937_64 gen(rd());
     std::uniform_real_distribution<double> uniform_RNG(0.0,1.0);
         // Uniform probability distribution - position, scales with R0 later
-    std::normal_distribution<double> gaussian_RNG(avg_Msun, std_Msun);
+    std::normal_distribution<double> gaussian_RNG(10*MSF, MSF);
         // Gaussian probability distribution - masses
 
     // Use with: cluster.createCelestialBody( position, velocity, mass );
@@ -92,6 +94,7 @@ int main(int numArguments, char **arguments){
     cluster.writeToFile(posName);//for some reason, 1st call only creates file
     cluster.EnergyToFile(enName);//2nd call and onwards writes data
     cluster.calculateForcesAndEnergy();
+    cluster.calculateBodyEnergy();
     cluster.writeToFile(posName);
     cluster.EnergyToFile(enName);
 

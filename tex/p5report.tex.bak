@@ -128,7 +128,7 @@
 
 		\begin{figure}[H]
 		\center
-		\includegraphics[scale=0.5]{../figs/frontpage.png}
+		\includegraphics[scale=0.5]{../frontpage.png}
 		\end{figure}
 
 		\begin{abstract}
@@ -152,9 +152,9 @@ For the current project, the students are to simulate an $N$-body system, unrela
 
 \section*{N-body simulation of an open galactic cluster}
 \section{Introduction}
-For this project I will review the mathematical equations related to Newtonian gravitation and other relevant equations.
+For this project I will review the mathematical equations related to Newtonian gravitation and other relevant equations, in order to simulate a stellar $N$-body system that starts out motionless before it begins to collapse in on itself, a so-called \textit{cold collapse}.
 
-It is worth noting that the differential integration method that I utilize is the Verlet method, as opposed to the Euler or RungeKutta4 method which were mentioned in the previous astronomical project.
+It is worth noting that the differential integration method that I utilize is the Velocity Verlet method, as opposed to the Euler or RungeKutta4 method which were mentioned in the previous astronomical project.
 
 The physical properties which I will investigate through this project are:
 \begin{itemize}
@@ -179,15 +179,18 @@ Furthermore, Newton's third law of motion comes into place here, as objects are 
 \end{align}
 and the force experienced by the second object of the two equals the same force that the first object experiences, only in the opposite direction.
 
-\subsection{Numerical round-off correction}
-At a later point in the project, there is introduced a smoothing factor that helps deal with numerical round-off problems, modifying the force equation thusly:
-\begin{align}\label{eq:modgravlaw}
-\vec{F}_{G_{i,j}} &= -G\frac{m_i m_j}{r^2_{i,j}+\varepsilon^2}\frac{\vec{r}_{i,j}}{r_{i,j}}
+Newtonian energy expressions will also be used, as per
+\begin{align}
+K_i = \frac{1}{2}m_i v^2_i \label{eq:KinEn}
 \end{align}
-wherein the new quantity $\varepsilon$ represents the aforementioned smoothing factor, with which different magnitudes of values will be experimented.
+for kinetic energy of body $i$, and
+\begin{align}
+V_{i,j} = -G\frac{m_i m_j}{r_{i,j}} \label{eq:PotEn}
+\end{align}
+for gravitational potential energy.
 
 \subsection{Time and gravitational constant}
-Then it is the matter of the system's time scale. It seems arbitrarily that I should measure time in years for a problem that isn't related to Earthern years. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{crunch}}$ (or $\tau_c$ for short). The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" \cite{STHM}, but its formalism is already given in the project's details. Simply put, it describes the analytical timeframe in which a homogeneous fluid collapses in on itself to form a singularity.
+Then it is the matter of the system's time scale. It seems arbitrarily that I should measure time in years for a problem that is not related to Earthern years. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{collapse}}$ (or $\tau_c$ for short). The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" \cite{STHM}, but its formalism is already given in the project's details. Simply put, it describes the analytical timeframe in which a collisionless homogeneous fluid collapses in on itself to form a singularity.
 
 From the expression of $\tau_c$ I then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$.
 \begin{align}\label{eq:tauc_and_G}
@@ -199,7 +202,64 @@ From the expression of $\tau_c$ I then pull the gravitational constant, dependen
 G &= \frac{1}{8}\frac{\pi^2 R_0^3}{\sum_{i} m_i}
 \end{align}
 
+\subsection{Stellar body ejection and energy conservation}
+The cluster's bodies initial conditions require that the bodies are at rest in the beginning of the integration process, which means that they are all in a state of potential energy and no kinetic energy.
 
+As an idealized case for a cluster such as this, the cluster's bodies would be bound to the system in a way that the kinetic energy of a body $i$, would never overcome its potential energy:
+\begin{align}
+K_i &\leq -V_i \nonumber \\
+\Delta E_i = K_i &+ V_i \leq 0
+\end{align}
+However, as time will pass and the system develops, some stellar body $i$ may aquire more kinetic energy than its potential energy holds at a certain time step, and thus it is at that time the body will be ejected from the cluster, as the following equation is satisfied:
+\begin{align}
+K_i &> -V_i \nonumber \\
+\Delta E_i = K_i &+ V_i > 0 \label{eq:ejection}
+\end{align}
+This is easy to implement as a check for ejected bodies when analyzing produced raw data.
+
+Another observation one might make from this is one of energy conservation. Due to the system's initial condition, all the initial energy is stored as potential energy, and by the law of energy conservation
+\begin{align}
+E_{\text{initial}} = \sum_i K_i + \sum_i V_i
+\end{align}
+the stored absolute energies at any given time must always sum to equal the amount that the system started with - another item with which to test the system.
+
+Another way to illustrate this is to view the gravitationally bound bodies and the ejected bodies seperately:
+\begin{align}
+E_{\text{initial}} &= K_b - V_b + K_e - V_e \nonumber \\
+&\simeq K_b - V_b + K_e 
+\end{align}
+where $K_b$, $V_b$ and $K_e$, $V_e$ are the sums of bound and ejected bodies' kinetic and potential energies, respectively.
+
+The simplification where one may ignore the term $V_e$ is sensible in the sense that the energy stored by gravitational potential decreases quickly with the distance between objects, as per equation \ref{eq:PotEn}.
+
+\subsection{Virial theorem}
+The virial theorem looks an $N$-body system, and claims that if the system is in gravitationally bound equilibrium, then the time averaged kinetic energy of the system should scale to the time average of the system's potential energy in the following way
+\begin{align}
+2\braket{K} &= -\braket{V} \nonumber \\
+\Rightarrow 2\braket{K} &+ \braket{V} = 0\nonumber
+\end{align}
+If this equation holds, the system is indeed in equilibrium (or oscillating around an equilibrium), and if the system is large enough, the average of the bodies that are still bound, approximates the time average of the bodies that are still bound
+\begin{align}
+2\braket{K} + \braket{V} = \frac{2 K_b - V_b}{\text{\# bound}} = 0
+\label{eq:virial}
+\end{align}
+at every time step, as per the ergodic hypothesis.
+
+
+\subsection{Numerical round-off correction}\label{section:matheps}
+At a later point in the project, there is introduced a smoothing factor that helps deal with numerical round-off problems, modifying the force equation thusly:
+\begin{align}\label{eq:modgravlaw}
+\vec{F}_{G_{i,j}} &= -G\frac{m_i m_j}{r^2_{i,j}+\varepsilon^2}\frac{\vec{r}_{i,j}}{r_{i,j}}
+\end{align}
+wherein the new quantity $\varepsilon$ represents the aforementioned smoothing factor, with which different magnitudes of values will be experimented.
+
+It is introduced to deal with force exchanges on significantly short distance scales that may occur in the simulations, which would then lead to near-infinite force exchanges between bodies due to erroneous or inaccurate numerical number representations in the integration.
+
+In terms of the trade: an "underflow" representation of distance $r_{i,j}$, leads to an "overflow" representation of force $\vec{F}_{G_{i,j}}$. The most evident effect of this will 
+
+On the other hand, introducing the smoothing factor $\varepsilon$ serves to always keep a reasonable, finite numerical value represented in the divisor of equation \ref{eq:modgravlaw}. But because the smoothing factor $\varepsilon$ is an artificial constant, then the integration of distances smaller than values of $\varepsilon$ will not be accurately integrated.
+
+It is then important to choose a value for the smoothing factor $\varepsilon$ to sufficiently smooth out the numerical instabilities, yet simultaneously not affect the macroscopic system's integration too greatly.
 
 \section{Programming}
 The previous project utilized some small-scale general relativity, which at the scales of this current project is obsolete. Instead, the force equation is rewritten according to equation \ref{eq:gravlaw} and \ref{eq:modgravlaw}.
@@ -247,8 +307,8 @@ Having tried out a few time resolutions, I settled on $\mathbf{dt} = 0.001\tau_c
 
 \section{Experiments}
 This section holds all the experiments that were performed with the code. Where not otherwise specified, parameters $\mathbf{R_0}$ and $\mathbf{dt}$ are set to $20$ and $0.001\tau_c$ respectively.
-\subsection{Equilibrium without numerical round-off correction results}
-Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction term yielded this development.
+\subsection{Simulations without numerical round-off correction results}
+Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction term yielded this development of motion.
 \begin{figure}
 [H]\center
 \includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie0.png}
@@ -257,29 +317,171 @@ Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction te
 \begin{figure}
 [H]\center
 \includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie200.png}
-\caption{$\mathbf{N} = 100$ body cluster simulation at $t \approx 7.5\tau_c$.}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 7.5\tau_c$.}
 \end{figure}
 \begin{figure}
 [H]\center
-\includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie500.png}
-\caption{$\mathbf{N} = 100$ body cluster simulation at $t \approx 16\tau_c$.}
+\includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie400.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 16\tau_c$.}
 \end{figure}
-\begin{figure}
-[H]\center
-\includegraphics[scale=0.35]{../figs/ClusterEnergies_100body_dt1_eps0_dur16.png}
-\caption{$\mathbf{N} = 100$ body cluster's energy development, all bodies' energies summed at every time step, over a duration of $t \approx 16\tau_c$.}\label{fig:eps0dur16}
-\end{figure}
-\subsection{Equilibrium without numerical round-off correction discussion}
-Having seen the development of the cluster by plots and animation, it seems that the cluster almost immediately ejects some of its contents, and as the rest of the structure collapses even more material is flung, the flinging being indicated by the sudden increases in kinetic energy from figure \ref{fig:eps0dur16}, sideways and beyond at regular intervals when the stellar distribution seems to pulse.
 
-It is clear that no matter for how long a duration one might choose for this set of initial conditions, a large fraction of stellar bodies are ejected and flung across space, effectively never to be bound by the cluster's potential well again.
+Running the simulation for varying values of $N = 100, 200, 400$ yielded the following plots \newpage
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesSys_100body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy development, all bodies' energies summed for every time step, over a duration of $t \simeq 16\tau_c$.}\label{fig:N100eps0dur16energy}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesSys_200body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 200$ body cluster's energy development, all bodies' energies summed for every time step, over a duration of $t \simeq 16\tau_c$.}
+\label{fig:N200eps0dur16energy}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesSys_400body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 400$ body cluster's energy development, all bodies' energies summed for every time step, over a duration of $t \simeq 16\tau_c$.}
+\label{fig:N400eps0dur16energy}
+\end{figure}
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesComp_100body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 100$ \textit{bound} body cluster's energy development, all \textit{bound} bodies' energies summed for every time step.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesComp_200body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 200$ \textit{bound} body cluster's energy development, all \textit{bound} bodies' energies summed for every time step.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesComp_400body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 400$ \textit{bound} body cluster's energy development, all \textit{bound} bodies' energies summed for every time step.}
+\end{figure}
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_100body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's ejected bodies' counting over a duration of $t \simeq 16\tau_c$, and energy of ejected bodies.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_200body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 200$ body cluster's ejected bodies' counting over a duration of $t \simeq 16\tau_c$, and energy of ejected bodies.}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_400body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 400$ body cluster's ejected bodies' counting over a duration of $t \simeq 16\tau_c$, and energy of ejected bodies.}
+\end{figure}
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_100body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy conservation illustration and virial approximation, over a duration of $t \simeq 16\tau_c$.}\label{fig:N100eps0consVirial}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_200body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 200$ body cluster's energy conservation illustration and virial approximation, over a duration of $t \simeq 16\tau_c$.}
+\label{fig:N200eps0consVirial}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_400body_dt1_eps0_dur16.png}
+\caption{$\mathbf{N} = 400$ body cluster's energy conservation illustration and virial approximation, over a duration of $t \simeq 16\tau_c$.}
+\label{fig:N400eps0consVirial}
+\end{figure}
+
+\subsection{Simulations without numerical round-off correction discussion}
+Having seen the development of the cluster by plots and animation, it seems that the cluster almost immediately ejects some of its contents, and as the rest of the structure collapses, even more material is flung, the flinging being indicated by the sudden increases in kinetic energy from figure \ref{fig:N100eps0dur16energy}, sideways and beyond, at regular intervals when the stellar distribution seems to pulse with time.
+
+It is clear that for no matter how long a duration one might choose run this set of initial conditions, a large fraction of stellar bodies are ejected and flung across space, effectively never to be bound by the cluster's gravitational potential well again.
 
 One might consider the aforementioned apparent motion of pulsation to be the energies of the system reaching an equilibrium point, which is the ideal for a gravitationally bound system. However, as such a large quantity of bodies that initially belonged to the cluster are ejected, then this seems a poor equilibrium for the initial system - even though the remaining core bodies seem to waltz around peacefully enough.
 
+In other words, whereas the system as a whole, with all bodies from the initial setup, is far from reaching an equilibrium state, the core that remains and continues to dance by the music of gravity, seems to reach some kind of near-equilibrium at a time around 2$\tau_c$, as indicated by the figures \ref{fig:N100eps0consVirial}, \ref{fig:N200eps0consVirial}, \ref{fig:N400eps0consVirial}, that show how the remaining bound bodies' energies seem to oscillate around viriality, as per the virial theorem and equation \ref{eq:virial}.
 
+A question then arises, in relation to the ergodeic hypothesis, from which we declared that an average over the whole system would replace the time average, to calculate viriality: how large a system is large enough? This speaks to the fact that for $N = 100$, around half of the bodies are ejected, which is quite a large fraction of bodies to lose and take an average over.
 
+However, as stated earlier, quite a lot of energy is lost to the system from the ejection that is due to numerical instabilities of the cluster's bodies' force exchange, and we see this clearly when looking at the magnitude scale of kinetic energies, which have been raised way beyond any measure of energy conservation, as per aforementioned figures \ref{fig:N100eps0consVirial}, \ref{fig:N200eps0consVirial}, \ref{fig:N400eps0consVirial}, and energy is then clearly not conserved in these simulations.
 
+While the energy taken away from the system is clearly quite large to begin with, it also seems to scale with increasing factor $N$, in accordance with the sense that an increased number of bodies that might potentially be ejected, an increased number of bodies are indeed ejected, which means that the total amount of energy ejected is bigger. The fractional ejection trend, however, seems to decrease with increasing $N$ bodies.
 
+One might then speculate that by a number of $N$ great enough, the fraction of ejected bodies might be so small, that even their collected energies will also be so small, that the simulational error which I will attempt to fix by introducing the modified gravity per equation \ref{eq:modgravlaw}, might not even be necessary in the great picture.
+
+A counter-indication to this, is the fact that the count of ejected particles seem to increase slowly but steadily, even after an equilibrium has been reached.
+
+\subsection{Finding numerical instability round-off correction constant results}
+To find the best value for $\varepsilon$ as a numerical instability correction constant, simulations are for a range of $\varepsilon = 0.01, 0.1, 1$ respectively. Energy conservation, ejected bodies' count, and ejected kinetic energy is investigated.
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_100body_dt1_eps1_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's ejected bodies' counting with $\varepsilon = 0.01$, and energy of ejected bodies.}\label{fig:N100eps1ejecEn}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_100body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's ejected bodies' counting with $\varepsilon = 0.1$, and energy of ejected bodies.}\label{fig:N100eps10ejecEn}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnergiesEjecEn_100body_dt1_eps100_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's ejected bodies' counting with $\varepsilon = 1$, and energy of ejected bodies.}\label{fig:N100eps100ejecEn}
+\end{figure}
+
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_100body_dt1_eps1_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy conservation illustration and virial approximation, with $\varepsilon = 0.01$.}\label{fig:N100eps1consVirial}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_100body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy conservation illustration and virial approximation, with $\varepsilon = 0.1$.}\label{fig:N100eps10consVirial}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterEnConsvVirial_100body_dt1_eps100_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster's energy conservation illustration and virial approximation, with $\varepsilon = 1$.}\label{fig:N100eps100consVirial}
+\end{figure}
+
+\subsection{Finding numerical instability round-off correction constant discussion}
+The goal here is to reach a model, by using the gravity equation \ref{eq:modgravlaw}, which introduces the correction term $\varepsilon$, so that the final model has \begin{itemize}
+\item as few as possible non-sensical kinetic energy spikes divided on a few bodies, to mantain physicality.
+\item a final model in which the energy seems to be conserved in the system.
+\item and where the system seems to virialize towards an equilibrium state.
+\end{itemize}
+
+The system should be free to eject bodies, as long as these bodies have reasonable kinetic energies, and total energy amount is conserved.
+
+With $\varepsilon$ set to $\varepsilon = 0.01$, there are still seemingly non-physical spikes of energy, figure \ref{fig:N100eps1ejecEn}, long after the system of bodies have seemed to gravitationally virialize, figure \ref{fig:N100eps1consVirial}. The fraction of ejecta is also still quite high, figure \ref{fig:N100eps1ejecEn}, and energy is definitely not conserved, according to figure \ref{fig:N100eps1consVirial}.
+
+For the other side of the range, $\varepsilon = 1$, very few objects are ejected, figure \ref{fig:N100eps100ejecEn}, and the kinetic energy spikes only happen a few times in the beginning, before these energies fade. On the other hand, both the energy conservation and the virialization belonging to this dataset is oscillating below ideal values, at great enough a magnitude that the data looks intuitively wrong. As discussed in section \ref{section:matheps}, this seems to indicate that the magnitude value of $\varepsilon = 1$ is too great to \textit{not} diffuse the macroscopic system's calculation.
+
+Lastly, for the middle value of the investigated range of $\varepsilon$s, there is $\varepsilon = 0.1$. This set value of the round-off correction term yielded a fairly reasonably low magnitude of ejected bodies, and the largest spike in ejection energy does not seem unreasonable, figure \ref{fig:N100eps10ejecEn}. At the same time, the system's energy conservation level seems to hover nearby the ideal level - despite a some minor aberrations, figure \ref{fig:N100eps10consVirial}.
+
+In this figure it is also seen how the energy seems the closest to being conserved around the time mark $\tau_c = 5$, although at times after this mark, the sum of the known energies seems set on a positive slope for no good reason. This is likely because the numerical instability correction term, $\varepsilon$, while used in the force exchange equation \ref{eq:modgravlaw}, is not taken account for in the potential energy equation \ref{eq:PotEn}.
+
+So wherein I have discovered that a value for the round-off correction term $\varepsilon = 0.1$ might be a good value, it is not a perfect value, or even a perfect solution, and simulated $N$-body systems' physicality could be speculated to become more and more unphysical after a time frame of $\tau_c = 5$, or $\tau_c = 6$.
+
+\subsection{Radial density results}
+Choosing equilibrium time to be around $t \simeq 4.5\tau_c$, these plots of radial distribution are retrieved from the data.
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_100body_dt1_eps10_dur16_movie113.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N100eps10eq}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterRadDens_100body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N100eps10eqHist}
+\end{figure}
+
+\subsection{Radial density discussion}
 
 \section{Appendix}
 \subsection{Code and GitHub}

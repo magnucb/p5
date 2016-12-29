@@ -2,14 +2,20 @@
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}
 \contentsline {section}{\numberline {2}Underlying math}{1}{section.2}
 \contentsline {subsection}{\numberline {2.1}Newton's laws}{1}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Numerical round-off correction}{1}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Time and gravitational constant}{1}{subsection.2.3}
-\contentsline {section}{\numberline {3}Programming}{2}{section.3}
-\contentsline {subsection}{\numberline {3.1}Update of main}{2}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Update of Velocity Verlet}{2}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Time steps}{2}{subsection.3.3}
-\contentsline {section}{\numberline {4}Experiments}{2}{section.4}
-\contentsline {subsection}{\numberline {4.1}Equilibrium without numerical round-off correction results}{3}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Equilibrium without numerical round-off correction discussion}{3}{subsection.4.2}
-\contentsline {section}{\numberline {5}Appendix}{4}{section.5}
-\contentsline {subsection}{\numberline {5.1}Code and GitHub}{4}{subsection.5.1}
+\contentsline {subsection}{\numberline {2.2}Time and gravitational constant}{1}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Stellar body ejection and energy conservation}{2}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Virial theorem}{2}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}Numerical round-off correction}{2}{subsection.2.5}
+\contentsline {section}{\numberline {3}Programming}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Update of main}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Update of Velocity Verlet}{3}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Time steps}{3}{subsection.3.3}
+\contentsline {section}{\numberline {4}Experiments}{4}{section.4}
+\contentsline {subsection}{\numberline {4.1}Simulations without numerical round-off correction results}{4}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Simulations without numerical round-off correction discussion}{7}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Finding numerical instability round-off correction constant results}{7}{subsection.4.3}
+\contentsline {subsection}{\numberline {4.4}Finding numerical instability round-off correction constant discussion}{9}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}Radial density results}{9}{subsection.4.5}
+\contentsline {subsection}{\numberline {4.6}Radial density discussion}{10}{subsection.4.6}
+\contentsline {section}{\numberline {5}Appendix}{10}{section.5}
+\contentsline {subsection}{\numberline {5.1}Code and GitHub}{10}{subsection.5.1}
