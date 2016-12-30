@@ -16,12 +16,12 @@ void Verlet::integrateOneStep(Cluster &system)
     // Velocity Verlet
     for (CelestialBody &body :system.bodies()) {
         // half-step computation
-        body.velocity += (m_dt/2.0)*(body.force / body.mass);
+        body.velocity += (m_dt/2.)*(body.force/body.mass);
         body.position += body.velocity*m_dt;
     }
     system.calculateForcesAndEnergy();
     for (CelestialBody &body :system.bodies()) {
         // the new velocity
-        body.velocity += (m_dt/2.0)*(body.force / body.mass);
+        body.velocity += (m_dt/2.)*(body.force/body.mass);
     }
 }

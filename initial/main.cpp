@@ -41,7 +41,7 @@ int main(int numArguments, char **arguments){
         tot_time = atoi(arguments[4]);
     }
     int numTimesteps = 1/dt;
-    float MSF = 100./NumOfBodies; // mass scaling factor to keep mass constant
+    double MSF = 100./NumOfBodies; // mass scaling factor, to keep mass constant
 
     cout << "I just created my first galactic cluster w/" << endl <<
             "* N   = " << NumOfBodies << " objects." << endl <<
@@ -57,7 +57,7 @@ int main(int numArguments, char **arguments){
     std::mt19937_64 gen(rd());
     std::uniform_real_distribution<double> uniform_RNG(0.0,1.0);
         // Uniform probability distribution - position, scales with R0 later
-    std::normal_distribution<double> gaussian_RNG(10*MSF, MSF);
+    std::normal_distribution<double> gaussian_RNG(avg_Msun*MSF, std_Msun*MSF);
         // Gaussian probability distribution - masses
 
     // Use with: cluster.createCelestialBody( position, velocity, mass );

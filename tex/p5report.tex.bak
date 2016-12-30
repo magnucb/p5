@@ -110,13 +110,10 @@
 
 \title{\normalsize Fys3150/4150 - Computational Physics\\
 \vspace{10mm}
-\huge 5. Continuation on Astronomical project -\\ $N$-body simulation of an open galactic cluster\\
-\vspace{10mm}
-\normalsize Due date {\bf Nov 9$^{th}$, 2016}}
+\huge 5. Continuation on Astronomical project -\\ $N$-body simulation of an open galactic cluster}
 
 % Skriv namnet ditt her og fjern kommenteringa
 \author{Magnus Christopher Bareid \\ un: magnucb }
-
 
 \begin{document}
 \vspace{5mm}
@@ -128,13 +125,19 @@
 
 		\begin{figure}[H]
 		\center
-		\includegraphics[scale=0.5]{../frontpage.png}
+		\includegraphics[scale=0.35]{../frontpage1.png}
 		\end{figure}
 
 		\begin{abstract}
-This project is a continuation on a previous project given to the students this semester, in which the students were to gravitationally and numerically simulate the Solar System.
+This project is a continuation on a previous project$^{\cite{example_code}}$ given to the students this semester, in which the students were to gravitationally and numerically simulate the Solar System.
 
 For the current project, the students are to simulate an $N$-body system, unrelated to the Solar system, and investigate properties of the system as it is simulated to reflect on the model's physical validity.
+
+The system will begin with only negative energy as its bodies are spread out, having no initial velocity, letting the system collapse in on itself.
+
+The physical properties which I will investigate through this project are energy conservation; numerical instabilities and introducing a correction term $\varepsilon$ to handle this; viriality of the simulations; and radial distribution of the system's bodies.
+
+Among the findings will be that energy conservation in this type of simulation is hard to reach; that an error correction term of $\varepsilon = 0.1$ proved the best fit , in spite of not fixing all problems; viriality of the systems seemed function excellently in the calculations; and the radial distribution of the cluster's bodies seemed to make sense with the math, even after having let the system evolve for a few time frames.
 		\end{abstract}
 
 		\newpage
@@ -152,7 +155,7 @@ For the current project, the students are to simulate an $N$-body system, unrela
 
 \section*{N-body simulation of an open galactic cluster}
 \section{Introduction}
-For this project I will review the mathematical equations related to Newtonian gravitation and other relevant equations, in order to simulate a stellar $N$-body system that starts out motionless before it begins to collapse in on itself, a so-called \textit{cold collapse}.
+For this project I will review the mathematical equations related to Newtonian gravitation and other relevant equations, in order to simulate a stellar cluster, an $N$-body system.
 
 It is worth noting that the differential integration method that I utilize is the Velocity Verlet method, as opposed to the Euler or RungeKutta4 method which were mentioned in the previous astronomical project.
 
@@ -160,8 +163,16 @@ The physical properties which I will investigate through this project are:
 \begin{itemize}
 \item energy conservation in an $N$-body system and its related equilibrium,
 \item numerical instabilities from round-off corrections,
-\item validity of the virial theorem,
+\item validity of the virial theorem for these simulations,
 \item radial distribution of stellar bodies in a gravitationally bound system.
+\end{itemize}
+
+In order to make the $N$-body model, some assumptions must be declared:
+\begin{itemize}
+\item $N$ bodies constitute the cluster, and interaction between bodies happens through Newtonian gravitational force, as seen in equation \ref{eq:gravlaw}.
+\item The $N$-body system is collisionless, see above point.
+\item The system's bodies are distributed within a sphere of radius $R_0 = 20$.
+\item The system's bodies have no initial velocity, a so-called \textit{cold collapse} .
 \end{itemize}
 
 \section{Underlying math}
@@ -190,7 +201,7 @@ V_{i,j} = -G\frac{m_i m_j}{r_{i,j}} \label{eq:PotEn}
 for gravitational potential energy.
 
 \subsection{Time and gravitational constant}
-Then it is the matter of the system's time scale. It seems arbitrarily that I should measure time in years for a problem that is not related to Earthern years. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{collapse}}$ (or $\tau_c$ for short). The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model" \cite{STHM}, but its formalism is already given in the project's details. Simply put, it describes the analytical timeframe in which a collisionless homogeneous fluid collapses in on itself to form a singularity.
+Then it is the matter of the system's time scale. It seems arbitrarily that I should measure time in years for a problem that is not related to Earthern years. Instead, time is defined through, and normalized by, an analytical expression for an $N$-body system's duration of collapse $\tau_{\text{collapse}}$ (or $\tau_c$ for short). The mathematical background and elaboration of $\tau_c$ is based on a topic of cosmology referred to as the "Spherical Top Hat Model"$^{\cite{STHM}}$, but its formalism is already given in the project's details. Simply put, it describes the analytical timeframe in which a collisionless homogeneous fluid collapses in on itself to form a singularity.
 
 From the expression of $\tau_c$ I then pull the gravitational constant, dependent on the system's density $\rho_0$, and by extension the cluster's limiting radius $R_0$.
 \begin{align}\label{eq:tauc_and_G}
@@ -255,16 +266,25 @@ wherein the new quantity $\varepsilon$ represents the aforementioned smoothing f
 
 It is introduced to deal with force exchanges on significantly short distance scales that may occur in the simulations, which would then lead to near-infinite force exchanges between bodies due to erroneous or inaccurate numerical number representations in the integration.
 
-In terms of the trade: an "underflow" representation of distance $r_{i,j}$, leads to an "overflow" representation of force $\vec{F}_{G_{i,j}}$. The most evident effect of this will 
+In terms of the trade: an "underflow" representation of distance $r_{i,j}$, leads to an "overflow" representation of force $\vec{F}_{G_{i,j}}$. The most evident effect of this will be when two bodies quite quickly gain unrealistic amounts of kinetic energy in too small of a time frame.
 
 On the other hand, introducing the smoothing factor $\varepsilon$ serves to always keep a reasonable, finite numerical value represented in the divisor of equation \ref{eq:modgravlaw}. But because the smoothing factor $\varepsilon$ is an artificial constant, then the integration of distances smaller than values of $\varepsilon$ will not be accurately integrated.
 
 It is then important to choose a value for the smoothing factor $\varepsilon$ to sufficiently smooth out the numerical instabilities, yet simultaneously not affect the macroscopic system's integration too greatly.
 
+\subsection{Radial density}
+There is an analytical expression often used to fit the radial distribution of gravitationally bound bodies in equilibrium with one another, from cold collapse system evolutions.
+\begin{align}
+n(r) = \frac{n_0}{\left( 1 + \left(\frac{r}{r_0}\right)^4\right)}\label{eq:radDens}
+\end{align}
+Of course, this is a simplification with which one may try to fit data to, and through this process values will be found for $n_0$ and $r_0$.
+
 \section{Programming}
 The previous project utilized some small-scale general relativity, which at the scales of this current project is obsolete. Instead, the force equation is rewritten according to equation \ref{eq:gravlaw} and \ref{eq:modgravlaw}.
 
 The layout of the class structures largely remain the same, and the main program basically runs the same way, with a few changes.
+
+While the data production is done by simulating systems with different initial conditions through C++, most of the data analysis is done with a Python script that matches the initial conditions, and produces plots.
 
 \subsection{Update of main}
 Command line functionality is modified to take in the system's number of bodies \textbf{N}, a time step size \textbf{dt}, correction factor $\varepsilon$, and duration of the simulation.
@@ -286,13 +306,13 @@ system.calculateForcesAndEnergy();
 // Velocity Verlet
 for (CelestialBody &body :system.bodies()) {
   // half-step computation
-  body.velocity += (m_dt/2.0)*(body.force / body.mass);
+  body.velocity += (m_dt/2.)*(body.force/body.mass);
   body.position += body.velocity*m_dt;
 }
 system.calculateForcesAndEnergy();
 for (CelestialBody &body :system.bodies()) {
   // the new velocity
-  body.velocity += (m_dt/2.0)*(body.force / body.mass);
+  body.velocity += (m_dt/2.)*(body.force/body.mass);
 }}
 \end{lstlisting}
 
@@ -305,10 +325,9 @@ To find try out a few resolutions, I constructed some initial test runs of the p
 
 Having tried out a few time resolutions, I settled on $\mathbf{dt} = 0.001\tau_c$, as this seemed to yield a smooth accuracy for the integration and still be time efficient.
 
-\section{Experiments}
-This section holds all the experiments that were performed with the code. Where not otherwise specified, parameters $\mathbf{R_0}$ and $\mathbf{dt}$ are set to $20$ and $0.001\tau_c$ respectively.
+\section{Experiments, discussions}
 \subsection{Simulations without numerical round-off correction results}
-Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction term yielded this development of motion.
+Simulating an $\mathbf{N} = 100$ body simulation with $\varepsilon = 0$ yielded this development of motion.
 \begin{figure}
 [H]\center
 \includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie0.png}
@@ -317,7 +336,7 @@ Simulating an $\mathbf{N} = 100$ body simulation with no round-off correction te
 \begin{figure}
 [H]\center
 \includegraphics[scale=0.35]{../moviefigs/ClusterPos_100body_dt1_eps0_dur16_movie200.png}
-\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 7.5\tau_c$.}
+\caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 8\tau_c$.}
 \end{figure}
 \begin{figure}
 [H]\center
@@ -469,19 +488,102 @@ In this figure it is also seen how the energy seems the closest to being conserv
 So wherein I have discovered that a value for the round-off correction term $\varepsilon = 0.1$ might be a good value, it is not a perfect value, or even a perfect solution, and simulated $N$-body systems' physicality could be speculated to become more and more unphysical after a time frame of $\tau_c = 5$, or $\tau_c = 6$.
 
 \subsection{Radial density results}
-Choosing equilibrium time to be around $t \simeq 4.5\tau_c$, these plots of radial distribution are retrieved from the data.
+Choosing equilibrium time to be around $t \simeq 4.5\tau_c$, this table and these plots of radial distribution data are retrieved from the simulations.
+
+The method for identifying the bodies that are still bound and their positions, is done in python with a few for loops and if tests.
+\begin{table}
+[H]\center
+\begin{tabular}{|r|c|c|c|c|}\hline
+	N & $\braket{R}$ & $\sigma_R$ & $r_0$ & $n_0$ \\ \hline
+	100 & 15.05		& 18.01 & 1.923	& 19	\\ \hline
+	200 & 10.51		& 15.89 & 1.550	& 43	\\ \hline
+	400 & 10.10 	& 13.99 & 1.644	& 83	\\ \hline
+	1000& 9.726		& 12.80	& 1.634	& 222	\\ \hline
+\end{tabular}
+\caption{Table of average radial radius and standard deviation of these radii, of gravitationally bound bodies at equilibrium time $t \simeq 4.5\tau_c$.}\label{tab:avgstd}
+\end{table}
+
 \begin{figure}
 [H]\center
-\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_100body_dt1_eps10_dur16_movie113.png}
+\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_100body_dt1_eps10_dur16.png}
 \caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N100eps10eq}
 \end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_200body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 200$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N200eps10eq}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_400body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 400$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N400eps10eq}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../moviefigs/eps10/ClusterPos_1000body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 1000$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N1000eps10eq}
+\end{figure}
+
 \begin{figure}
 [H]\center
 \includegraphics[scale=0.35]{../figs/ClusterRadDens_100body_dt1_eps10_dur16.png}
 \caption{$\mathbf{N} = 100$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N100eps10eqHist}
 \end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterRadDens_200body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 200$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N200eps10eqHist}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterRadDens_400body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 400$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N400eps10eqHist}
+\end{figure}
+\begin{figure}
+[H]\center
+\includegraphics[scale=0.35]{../figs/ClusterRadDens_1000body_dt1_eps10_dur16.png}
+\caption{$\mathbf{N} = 1000$ body cluster simulation at $t \simeq 4.5\tau_c$.}\label{fig:N1000eps10eqHist}
+\end{figure}
 
 \subsection{Radial density discussion}
+It can be seen from table \ref{tab:avgstd} that both average radial radius and its standard deviation decreases with increasing $N$ bodies in a system's simulation for the equilibrium point chosen, however not linearly so, which in turn makes $\braket{R} \propto N^\text{power}$, where $\text{power} \geq 3$ seems a likely case.
+
+This decline in an average radius between bodies makes sense, as shown in figures \ref{fig:N100eps10eq} through \ref{fig:N1000eps10eq}, where the accumulation of bodies in a core group of the cluster's structure leads to an increased density, which in turn leads to a decrease in average distance between the bodies. This would also explain the decrease in the standard deviation, for denser and denser clusters.
+
+The fitting of equation \ref{eq:radDens} on top of the radial densities, as seen from figures \ref{fig:N100eps10eqHist} through \ref{fig:N1000eps10eqHist} shows that the analytical model fits generally wel with the observed data, at least in terms of the general trend, whilst not accounting for a lot of discrepancy.
+
+One may also note that in figure \ref{fig:N100eps10eqHist}, the analytical approximation doesn't even describe the peak of distributed matter, which makes it plausible that either a system of $N=100$ bound bodies is too small a system to be statistically valid.
+
+Another note would be to observe how all the forms of $n(r)$ seem to be almost exactly the same shape, which leads me to wonder if my calculations for one of the factors that determines its shape has a flaw in it, and that their description-ish of the radial density's trend is pure accident.
+
+\section{Conclusion}
+This project has detailed how the cold collapse of an $N$-body will simulate with respect to time, with a set of initial conditions, and while investigating some physical properties, trying to make the simulation physically real simultaneously.
+
+Choosing a time step \textbf{dt} = 0.001$\tau_c$ from trial and error was the first step in this direction, by trying to have a good resolution and a time-efficient integration cycle.
+
+It was, however, not enough, as numerical instabilities plagued the integration's steps, causing very unreal energy measurements, and ejecting far too many bodies from the clusters' structures. The smoothness factor $\varepsilon$ from equation \ref{eq:modgravlaw} was then introduced, in an attempt to make both virialization and energy conservation work for the model.
+
+Setting $\varepsilon = 0.1$ proved to be the best fit from my experiments; although while the virialization for this value was spot on, ejected bodies decreased significantly and energy conservation yielded the best result for this value of $\varepsilon$, though not as good a result as I would have hoped for. Due to this, it is my consideration that even with this correction term applied, the system's energy is still not conserved.
+
+The interpretation of what $\varepsilon$ should represent in these calculations could well tie in to the fact that the bodies which are simulated are, as long as they're not black holes, of finite length in the three dimensions governed by Newtionian gravity. Without this factor, these bodies would interact only through gravity, thus being without the implementation of collisions. As seen from crazy orbits around black holes, much-too-close orbits around a gravitational center lead to crazy energies, which we name "numerical instabilities".
+
+Bringing $\varepsilon$ then into the equation essentially removes this type of crazy interaction, giving the force exchange between bodies a finite, lower limit. It then makes sense that, although collisional interaction still is not implemented, the cluster's bodies have by introducing $\varepsilon$ been given spatial extent: a body's representation in space.
+
+The assumption of $\tau_c$ being the collapse time of any system, seems to hold fairly well for all values of $N$ with which I have run the simulations. One may see from energy readings that the kinetic energy spikes around $\tau_c = 1$ for all systems, which means that this is where all particles have achieved their maximum velocities, which in turn means that they've reached the bottom of their gravitational well, which in an ideally constructed system would be at the center of the cluster, which means that the cluster has indeed collapsed.
+
+After this, all the systems simulated, including the final model with the numerical instability term applied as $\varepsilon = 0.1$, show signs that the systems' virialization seems to begin stabilizing around 1.5$\tau_c$, which in turn is consistent with Spherical Top Hat Model theory$^{\cite{STHM}}$.
+
+But the mere fact that the remaining bodies virialize, for all values of $N$ bodies and with the right values for $\varepsilon$, show that the systems manage to reach motional equilibriums, even though energy is not conserved. This is remarkable as one could easily think that a system which would not feature energy conervation well, should not reach any kind of equilibrium, not even virialize.
+
+The radial density of the bodies, as per intuition, a stellar cluster's bodies will be densest in the middle at equilibrium time. It also makes sense that the interbody distances decrease as the cluster starts out denser with increasing $N$.
+
+It is interesting to note that fraction of ejected bodies compared to initial amount of bodies, seem to decrease with increasing $N$ bodies. It is easy to think that this is because a denser cluster's gravitational exchange will simultaneously experience a tighter grip on itself, and behave more like a self-contained homogeneous fluid with increasing $N \rightarrow \infty$.
+
+However, the fact remains that this is an $N$-body system, and not a homogeneous fluid, and that is why no singularities are created in these simulations, at least not as far as the Newtonian mechanics which are implemented go. Maybe if the force equation was Einsteinian, and $\varepsilon = 0$, maybe then one would see singularities form quite easily, but that would be for a different kind of project assignment.
+
+If I'd have to improve anything from this assigment, my first choice would be to troubleshoot the implementation of equation \ref{eq:radDens} to make sure it is working as intended.
+
+Another thing to investigate would be if the fit of $\varepsilon$ depends on $N$, considering the system always initializes in the same volume and how densities differ. Intuitively, $\varepsilon$ is a pure numerical factor and the integration should remain uninfringed by changing $N$, but the variation of $\varepsilon$ still \textit{might} affect the system positively or negatively.
 
 \section{Appendix}
 \subsection{Code and GitHub}
@@ -491,13 +593,13 @@ All my code is located at this address:
 
 \begin{thebibliography}{9}
 \bibitem{example_code}
-  Jensen, M 2016,
+  Bareid, M 2016,
   
-  \verb|CodeName|,
+  \verb|SolarSystem.pro|,
   
   viewed $9^{th}$ of December 2016,
   
-  \url{URL}
+  \url{https://github.com/magnucb/Project3}	
 
 \bibitem{cold_collapse}
 	M. Joyce, B. Marcos, and F. Sylos Labini 2010,

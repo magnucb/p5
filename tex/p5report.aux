@@ -16,6 +16,7 @@
 \gdef\HyperFirstAtBeginDocument#1{#1}
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{example_code}
 \select@language{english}
 \@writefile{toc}{\select@language{english}}
 \@writefile{lof}{\select@language{english}}
@@ -34,17 +35,19 @@
 \newlabel{eq:ejection}{{7}{2}{Stellar body ejection and energy conservation}{equation.2.7}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Virial theorem}{2}{subsection.2.4}}
 \newlabel{eq:virial}{{10}{2}{Virial theorem}{equation.2.10}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Numerical round-off correction}{2}{subsection.2.5}}
-\newlabel{section:matheps}{{2.5}{2}{Numerical round-off correction}{subsection.2.5}{}}
-\newlabel{eq:modgravlaw}{{11}{2}{Numerical round-off correction}{equation.2.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}Numerical round-off correction}{3}{subsection.2.5}}
+\newlabel{section:matheps}{{2.5}{3}{Numerical round-off correction}{subsection.2.5}{}}
+\newlabel{eq:modgravlaw}{{11}{3}{Numerical round-off correction}{equation.2.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.6}Radial density}{3}{subsection.2.6}}
+\newlabel{eq:radDens}{{12}{3}{Radial density}{equation.2.12}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Programming}{3}{section.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Update of main}{3}{subsection.3.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Update of Velocity Verlet}{3}{subsection.3.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Time steps}{3}{subsection.3.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{4}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Update of Velocity Verlet}{4}{subsection.3.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Time steps}{4}{subsection.3.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments, discussions}{4}{section.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Simulations without numerical round-off correction results}{4}{subsection.4.1}}
 \@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t = 0\tau _c$.\relax }}{4}{figure.caption.4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 7.5\tau _c$.\relax }}{4}{figure.caption.5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 8\tau _c$.\relax }}{4}{figure.caption.5}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 16\tau _c$.\relax }}{4}{figure.caption.6}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces $\mathbf  {N} = 100$ body cluster's energy development, all bodies' energies summed for every time step, over a duration of $t \simeq 16\tau _c$.\relax }}{5}{figure.caption.7}}
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
@@ -81,13 +84,29 @@
 \newlabel{fig:N100eps100consVirial}{{21}{8}{$\mathbf {N} = 100$ body cluster's energy conservation illustration and virial approximation, with $\varepsilon = 1$.\relax }{figure.caption.24}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Finding numerical instability round-off correction constant discussion}{9}{subsection.4.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Radial density results}{9}{subsection.4.5}}
-\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{9}{figure.caption.25}}
-\newlabel{fig:N100eps10eq}{{22}{9}{$\mathbf {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.25}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Table of average radial radius and standard deviation of these radii, of gravitationally bound bodies at equilibrium time $t \simeq 4.5\tau _c$.\relax }}{9}{table.caption.25}}
+\newlabel{tab:avgstd}{{1}{9}{Table of average radial radius and standard deviation of these radii, of gravitationally bound bodies at equilibrium time $t \simeq 4.5\tau _c$.\relax }{table.caption.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{9}{figure.caption.26}}
+\newlabel{fig:N100eps10eq}{{22}{9}{$\mathbf {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces $\mathbf  {N} = 200$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.27}}
+\newlabel{fig:N200eps10eq}{{23}{10}{$\mathbf {N} = 200$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.27}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces $\mathbf  {N} = 400$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.28}}
+\newlabel{fig:N400eps10eq}{{24}{10}{$\mathbf {N} = 400$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces $\mathbf  {N} = 1000$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.29}}
+\newlabel{fig:N1000eps10eq}{{25}{10}{$\mathbf {N} = 1000$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.30}}
+\newlabel{fig:N100eps10eqHist}{{26}{10}{$\mathbf {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces $\mathbf  {N} = 200$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.31}}
+\newlabel{fig:N200eps10eqHist}{{27}{10}{$\mathbf {N} = 200$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {28}{\ignorespaces $\mathbf  {N} = 400$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.32}}
+\newlabel{fig:N400eps10eqHist}{{28}{10}{$\mathbf {N} = 400$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {29}{\ignorespaces $\mathbf  {N} = 1000$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{11}{figure.caption.33}}
+\newlabel{fig:N1000eps10eqHist}{{29}{11}{$\mathbf {N} = 1000$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.33}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Radial density discussion}{11}{subsection.4.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion}{11}{section.5}}
+\citation{STHM}
 \bibcite{example_code}{1}
 \bibcite{cold_collapse}{2}
 \bibcite{STHM}{3}
-\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces $\mathbf  {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }}{10}{figure.caption.26}}
-\newlabel{fig:N100eps10eqHist}{{23}{10}{$\mathbf {N} = 100$ body cluster simulation at $t \simeq 4.5\tau _c$.\relax }{figure.caption.26}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Radial density discussion}{10}{subsection.4.6}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Appendix}{10}{section.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Code and GitHub}{10}{subsection.5.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Appendix}{12}{section.6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Code and GitHub}{12}{subsection.6.1}}

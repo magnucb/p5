@@ -289,20 +289,20 @@ def plotVirial(posdat, endat, bodycount, dt, eps, tot_time):
     for body in range(len(eq_pos)):
         ax3D.plot([eq_pos[body,0]], [eq_pos[body,1]], [eq_pos[body,2]], marker="o", color=colorlist[body])
 
-    ax3D.set_title(r"Star cluster 3D %dbody %gdt %g$\varepsilon$, t=%g$\tau_c$" % (bodycount, dt, eps, (tot_time*i/float(pos_length)) ) )
+    ax3D.set_title(r"Star cluster 3D %dbody %gdt %g$\varepsilon$, t=%g$\tau_c$" % (bodycount, dt, eps, eq_time ) )
     ax3D.set_xlabel("X-axis [ly]")
     ax3D.set_ylabel("Y-axis [ly]")
     ax3D.set_zlabel("Z-axis [ly]")
     ax3D.set_xlim([-25,25])
     ax3D.set_ylim([-25,25])
     ax3D.set_zlim([-25,25])
-    fig3D.savefig("../moviefigs/eps"+str(int(eps*100))+"/ClusterPos_"+str(bodycount)+"body_dt"+str(int(dt*1000))+"_eps"+str(int(eps*100))+"_dur"+str(int(tot_time))+"_movie"+str(i)+".png")
+    fig3D.savefig("../moviefigs/eps"+str(int(eps*100))+"/ClusterPos_"+str(bodycount)+"body_dt"+str(int(dt*1000))+"_eps"+str(int(eps*100))+"_dur"+str(int(tot_time))+".png")
 
     print "mean eq. radius:", pl.mean(eq_radia)
     print "std dev. radius:", pl.std(eq_radia)
 
     bincount = 60
-    weights, edges = pl.histogram(eq_radia, bins = bincount, range=None, normed=False, weights=None, density=None)
+    weights, edges = pl.histogram(eq_radia, bins = bincount, normed=False)
     radia = edges + 0.5*(edges[1]-edges[0])
     
     # lsm finds correct r0
@@ -310,12 +310,11 @@ def plotVirial(posdat, endat, bodycount, dt, eps, tot_time):
     alphalower  = 0.01
     alphaupper  = 2.
     alpha       = pl.linspace(alphalower, alphaupper, lengthnumber)
-    r0lower     = 0.001
+    r0lower     = 0.0001
     r0upper     = 10.
     r0          = pl.linspace(r0lower, r0upper, lengthnumber)
     
     n0      = max(weights)
-    print n0
     n0arg   = pl.argmax(weights)
     r0final = bodycount**(1./3) # assuming it depends somehow on total body number in volume
     nsums   = pl.zeros(lengthnumber)
@@ -326,15 +325,33 @@ def plotVirial(posdat, endat, bodycount, dt, eps, tot_time):
 
     minarg = pl.argmin(nsums)
     r0final *= alpha[minarg]
-    
+    print "n0", n0
+    print "r0", r0final
+    """
     pl.figure()
-    pl.hist(eq_radia, bins=bincount, label="hist")
-    # pl.bar(edges[:-1], weights, label="histogram")
-    pl.plot(radia, n(edges, r0final, n0), label="n(r)", color='black', linestyle='dashed', linewidth=5)
-
+    pl.subplot(2,1,1)
+    pl.hist(eq_radia, label="Histogram of bodies", bins=bincount)
+    pl.legend(loc='best')
+    pl.ylabel(r"Bodies in the data")
     pl.title(r"Radial density of bound bodies, %dbody %gdt %g$\varepsilon$" % (bodycount, dt, eps) )
+    pl.grid('on')
+    
+    pl.subplot(2,1,2)
+    pl.plot(edges + edges[pl.argmax(weights)], n(edges, r0final, n0), label=r"$n(r)$", color='blue', linewidth=2)
     pl.xlabel(r"Radius $R_0$")
-    pl.ylabel(r"Bodies")
+    pl.ylabel(r"Radial distribution model")
+    pl.legend(loc='best')
+    pl.grid('on')
+    pl.savefig("../figs/ClusterRadDens_"+str(bodycount)+"body_dt"+str(int(dt*1000))+"_eps"+str(int(eps*100))+"_dur"+str(int(tot_time))+".png")
+    """
+
+    pl.figure()
+    pl.hist(eq_radia, label="Histogram of bodies", color='cyan', bins=bincount)
+    pl.title(r"Radial density of bound bodies, %dbody %gdt %g$\varepsilon$" % (bodycount, dt, eps) )
+    
+    pl.plot(edges + edges[pl.argmax(weights)], n(edges, r0final, n0), label=r"$n(r)$", color='magenta', linewidth=2)
+    pl.xlabel(r"Radius $R_0$")
+    pl.ylabel(r"Radial distribution")
     pl.legend(loc='best')
     pl.grid('on')
     pl.savefig("../figs/ClusterRadDens_"+str(bodycount)+"body_dt"+str(int(dt*1000))+"_eps"+str(int(eps*100))+"_dur"+str(int(tot_time))+".png")
